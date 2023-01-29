@@ -13,7 +13,7 @@ const supabaseAdmin = createClient(
   
 export const deletePost = async (id:number)=>{
 
-    
+    console.log(id);
 const { error } = await supabaseAdmin
 .from('posts')
 .delete()
