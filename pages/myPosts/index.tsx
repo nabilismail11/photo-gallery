@@ -8,7 +8,7 @@ const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
 );
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
   //   console.log(session);
 
   const { data } = await supabaseAdmin
