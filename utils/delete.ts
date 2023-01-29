@@ -11,7 +11,7 @@ const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
   );
   
-export const deletePost = async (id:number|undefined)=>{
+export const deletePost = async (id:number)=>{
 
     
 const { error } = await supabaseAdmin
