@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import {
   useSession,
@@ -9,23 +9,23 @@ import { Database } from "../../utils/database.types";
 import SignUp from "../signup";
 
 import { Post } from "../../types/post";
-type Data = {
-  username: string;
+import { useRouter } from "next/navigation";
+import { LoadingScreen } from "../../components/Loading";
+import { usePostContext } from "../../hooks/usePostContext";
 
-  website: string | null;
-
-  avatar_url: string | null;
-};
 const index = () => {
+  const router = useRouter();
   const [username, setUsername] = useState("");
   let uName: string;
   const supabase = useSupabaseClient<Database>();
   const session = useSession();
   const user = useUser();
   const [image, SetImage] = useState("");
-  const [fileU, setFileU] = useState<File | string>("");
+  const [fileU, setFileU] = useState<File | string | null>();
   const [loading, setLoading] = useState(false);
-  const [caption, setCaption] = useState("");
+  const [loader, setLoader] = useState(false);
+  const [caption, setCaption] = useState<string | null>();
+  const { addPost } = usePostContext();
 
   const uploadPost = async (post: Post) => {
     try {
@@ -34,6 +34,9 @@ const index = () => {
         body: JSON.stringify({ data: post }),
         headers: { "Content-Type": "application/json" },
       });
+      alert("Post Uploaded");
+      setLoader(false);
+      addPost(post);
       SetImage("");
       setCaption("");
     } catch (err) {
@@ -57,9 +60,8 @@ const index = () => {
 
       if (data) {
         setUsername(data.username);
-        console.log(username);
+
         uName = data.username;
-        console.log(uName);
       }
     } catch (error) {
       alert("Error loading user data!");
@@ -85,7 +87,7 @@ const index = () => {
     setFileU(file);
 
     previewFile(file);
-    setLoading(true);
+    setLoading(false);
     const fileExt = file.name.split(".").pop();
     const fileName = `${uid}.${fileExt}`;
     const filePath = `${fileName}`;
@@ -100,36 +102,57 @@ const index = () => {
   const handleUpload: React.MouseEventHandler<HTMLButtonElement> = async (
     event
   ) => {
+    setLoader(true);
     await getProfile();
-    if (!user) throw new Error("No user");
-    console.log(user);
+    if (!user) {
+      setLoader(false);
+      throw new Error("No user");
+    }
 
-    const fileName = user.id + "/" + uuidv4();
-
-    const { data, error } = await supabase.storage
-      .from("post-images")
-      .upload(fileName, fileU);
-    setLoading(false);
-    if (data) {
-      console.log(data);
-
-      const post: Post = {
-        href: "/",
-        source:
-          "https://eadmdwacvzflwjvwxxlq.supabase.co/storage/v1/object/public/post-images/" +
-          fileName,
-        caption: caption,
-        user_id: user.id,
-        username: uName,
-      };
-      uploadPost(post);
+    if (!uName) {
+      setLoader(false);
+      alert("Please Update your username");
+      router.push("/signup");
     } else {
-      console.log(error);
+      if (caption && fileU) {
+        const fileName = user.id + "/" + uuidv4();
+
+        const { data, error } = await supabase.storage
+          .from("post-images")
+          .upload(fileName, fileU);
+        setLoading(false);
+        if (data) {
+          console.log(data);
+
+          const post: Post = {
+            href: "/",
+            source:
+              "https://eadmdwacvzflwjvwxxlq.supabase.co/storage/v1/object/public/post-images/" +
+              fileName,
+            caption: caption,
+            user_id: user.id,
+            username: uName,
+          };
+          uploadPost(post);
+        } else {
+          console.log(error);
+        }
+      } else {
+        if (!fileU && !caption) {
+          alert("Select image and enter Caption");
+        } else if (!fileU) {
+          alert("Select Post Image");
+        } else if (!caption) {
+          alert("Enter Caption");
+        }
+      }
     }
   };
 
   return !session ? (
     <SignUp />
+  ) : loader ? (
+    <LoadingScreen />
   ) : (
     <div className="max-w-sm rounded overflow-hidden shadow-lg mx-auto mt-10">
       <img
@@ -137,9 +160,10 @@ const index = () => {
         src={
           image
             ? image
-            : "https://eadmdwacvzflwjvwxxlq.supabase.co/storage/v1/object/public/posts/saumit.png"
+            : "https://eadmdwacvzflwjvwxxlq.supabase.co/storage/v1/object/public/posts/dummy-image-square-1.jpg"
         }
         alt="Sunset in the mountains"
+        onClick={(e) => {}}
       />
       <div className="px-6 py-4">
         <div className="font-bold text-xl mb-2">New Post</div>
@@ -153,7 +177,7 @@ const index = () => {
               onChange={(e) => {
                 setCaption(e.target.value);
               }}
-              value={caption}
+              value={(caption as string) || ""}
             />
             <button
               className="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 text-sm border-4 text-white py-1 px-2 rounded"

@@ -3,8 +3,8 @@ import Image from "next/image";
 
 import { Post } from "../types/post";
 import { deleteImage } from "../utils/delete";
-// import { useRouter } from "next/navigation";
 import { useRouter } from "next/router";
+import { usePostContext } from "../hooks/usePostContext";
 
 function cn(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -13,19 +13,22 @@ function cn(...classes: string[]) {
 export default function BlurImage({
   post,
   admin,
+  loader,
 }: {
   post: Post;
   admin: boolean;
+  loader?: Function;
 }) {
   const [isLoading, setLoading] = useState(true);
-  const [refresh, setRefresh] = useState(false);
 
-  const router = useRouter();
+  const { delPost } = usePostContext();
 
-  const delPost = async () => {
-    await deleteImage(post, router);
-    router.reload();
-    router.reload();
+  const deletePost = async () => {
+    if (loader) {
+      loader(true);
+      await deleteImage(post, delPost);
+      loader(false);
+    }
   };
 
   return (
@@ -68,7 +71,7 @@ export default function BlurImage({
         {admin && (
           <button
             className="bg-red-500 hover:bg-red-700 text-white font-bold p-2 rounded text-center m-1  h-10"
-            onClick={delPost}
+            onClick={deletePost}
           >
             delete
           </button>

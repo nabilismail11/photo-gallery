@@ -1,56 +1,53 @@
 import { createClient } from "@supabase/supabase-js";
+import { usePostContext } from "../hooks/usePostContext";
 
 
-
-
-import { useSession } from "@supabase/auth-helpers-react";
 import { Post } from "../types/post";
-import { NextRouter, Router } from "next/router";
+
 const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL || "",
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
+  process.env.NEXT_PUBLIC_SUPABASE_URL || "",
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
   );
   
-export const deletePost = async (id:number|undefined)=>{
+  export const deletePost = async (post:Post,delPost:Function) => {
+    
+    const { data,error } = await supabaseAdmin
+    .from('posts')
+    .delete()
+    .eq('id', post.id)
+    .select()
+    
+  if (error) {
+    alert(error);
+    
+  } else {
+    console.log(data);
+    delPost(post);
+    alert("Post Successfully deleted");
+    
 
-    
-const { error } = await supabaseAdmin
-.from('posts')
-.delete()
-.eq('id', id)
 
-if (error) {
-    console.log(error);
-    
-}else{
-    console.log("deleted");
-    
-    
+  }
+
+
 }
 
+export const deleteImage = async (post: Post,delPost:Function) => {
 
-}
+  if (post) {
 
-export const deleteImage = async (post:Post, router:NextRouter) =>{
-    
-    if (post) {
-        console.log("invoked");
-        
-        
-        
-        const { error } = await supabaseAdmin
-          .storage
-          .from('post-images')
-          .remove([post.user_id+"/"+post.source.split("/").at(-1)])
-        if(error) {
-          console.log(error);
-          return
-          
-        } else {
-            console.log(post.source.split("/").at(-1));
-            deletePost(post.id)
-            
-        }
-        
+    const { error } = await supabaseAdmin
+      .storage
+      .from('post-images')
+      .remove([post.user_id + "/" + post.source.split("/").at(-1)])
+    if (error) {
+      alert(error);
+      return
+
+    } else {
+      await deletePost(post,delPost)
+
     }
+
+  }
 }

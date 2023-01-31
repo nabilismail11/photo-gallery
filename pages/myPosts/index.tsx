@@ -2,33 +2,32 @@ import Gallery from "../../components/Gallery";
 import { createClient } from "@supabase/supabase-js";
 import { Post } from "../../types/post";
 import { useSession } from "@supabase/auth-helpers-react";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { LoadingScreen } from "../../components/Loading";
+import { usePostContext } from "../../hooks/usePostContext";
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || "",
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
 );
 
-export async function getServerSideProps() {
-  //   console.log(session);
-
-  const { data } = await supabaseAdmin
-    .from("posts")
-    .select("*")
-    .order("created_at", { ascending: false });
-  // .eq("user_id", session?.user.id);
-
-  return {
-    props: {
-      posts: data,
-    },
-  };
-}
-
-export default function Home({ posts }: { posts: Post[] }) {
+export default function Home() {
   const session = useSession();
-  posts = posts.filter((post) => {
-    return post.user_id == session?.user.id;
-  });
+  const { posts } = usePostContext();
+  const filter = posts.filter((post) => post.user_id == session?.user.id);
 
-  return <Gallery posts={posts} admin={true} />;
+  const [loader, setLoader] = useState(false);
+
+  const initLoader = (bool: boolean) => {
+    setLoader(bool);
+  };
+
+  useEffect(() => {}, [loader]);
+
+  return loader ? (
+    <LoadingScreen />
+  ) : (
+    <Gallery posts={filter} admin={true} loader={initLoader} />
+  );
 }

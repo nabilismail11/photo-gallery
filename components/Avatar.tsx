@@ -70,22 +70,25 @@ export default function Avatar({
   };
 
   return (
-    <div>
+    <div className="grid content-center">
       {avatarUrl ? (
         <img
           src={avatarUrl}
           alt="Avatar"
-          className="avatar image"
+          className="avatar image border-dotted border-2 border-sky-500"
           style={{ height: size, width: size }}
         />
       ) : (
         <div
-          className="avatar no-image"
+          className="avatar no-image border-dotted border-2 border-sky-500"
           style={{ height: size, width: size }}
         />
       )}
-      <div style={{ width: size }}>
-        <label className="button primary block" htmlFor="single">
+      <div style={{ width: size }} className="grid justify-center">
+        <label
+          className="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+          htmlFor="single"
+        >
           {uploading ? "Uploading ..." : "Upload"}
         </label>
         <input

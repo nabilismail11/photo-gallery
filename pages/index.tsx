@@ -1,6 +1,8 @@
 import Gallery from "../components/Gallery";
 import { createClient } from "@supabase/supabase-js";
 import { Post } from "../types/post";
+import { usePostContext } from "../hooks/usePostContext";
+import { useEffect } from "react";
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || "",
@@ -15,11 +17,24 @@ export async function getServerSideProps() {
 
   return {
     props: {
-      posts: data,
+      postsS: data,
     },
   };
 }
 
-export default function Home({ posts }: { posts: Post[] }) {
-  return <Gallery posts={posts} admin={false} />;
+export default function Home({ postsS }: { postsS: Post[] }) {
+  const { posts, getPosts } = usePostContext();
+  console.log(postsS);
+
+  useEffect(() => {
+    if (postsS) {
+      getPosts(postsS);
+    }
+  }, []);
+
+  return (
+    <div>
+      <Gallery posts={posts} admin={false} />
+    </div>
+  );
 }
