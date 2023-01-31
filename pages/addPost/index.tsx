@@ -34,9 +34,9 @@ const index = () => {
         body: JSON.stringify({ data: post }),
         headers: { "Content-Type": "application/json" },
       });
-      alert("Post Uploaded");
-      setLoader(false);
+      //alert("Post Uploaded");
       addPost(post);
+      setLoader(false);
       SetImage("");
       setCaption("");
     } catch (err) {
@@ -65,7 +65,7 @@ const index = () => {
       }
     } catch (error) {
       alert("Error loading user data!");
-      console.log(error);
+      //console.log(error);
     }
   }
   const previewFile = (file: Blob) => {
@@ -96,7 +96,7 @@ const index = () => {
     //   .from("posts")
     //   .upload(filePath, file, { upsert: true });
 
-    // console.log(uploadError);
+    // //console.log(uploadError);
   };
 
   const handleUpload: React.MouseEventHandler<HTMLButtonElement> = async (
@@ -122,7 +122,7 @@ const index = () => {
           .upload(fileName, fileU);
         setLoading(false);
         if (data) {
-          console.log(data);
+          //console.log(data);
 
           const post: Post = {
             href: "/",
@@ -135,7 +135,7 @@ const index = () => {
           };
           uploadPost(post);
         } else {
-          console.log(error);
+          //console.log(error);
         }
       } else {
         if (!fileU && !caption) {

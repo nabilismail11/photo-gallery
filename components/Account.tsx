@@ -44,7 +44,7 @@ export default function Account({ session }: { session: Session }) {
       }
     } catch (error) {
       alert("Error loading user data!");
-      console.log(error);
+      //console.log(error);
     } finally {
       setLoading(false);
     }
@@ -77,7 +77,7 @@ export default function Account({ session }: { session: Session }) {
       router.back();
     } catch (error) {
       alert("Error updating the data!");
-      console.log(error);
+      //console.log(error);
     } finally {
       setLoading(false);
     }

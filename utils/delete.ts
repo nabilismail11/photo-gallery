@@ -21,9 +21,9 @@ const supabaseAdmin = createClient(
     alert(error);
     
   } else {
-    console.log(data);
+//    //console.log(data);
     delPost(post);
-    alert("Post Successfully deleted");
+    //alert("Post Successfully deleted");
     
 
 

@@ -15,10 +15,10 @@ const sentImage = async (post:Post) => {
    const {data,error} = await supabaseAdmin.from('posts').insert([post]);
 
    if (data) {
-    console.log(data);
+    //console.log(data);
     
    }else{
-    console.log(error);
+    //console.log(error);
     
    }
   
@@ -30,11 +30,11 @@ export default function handler(
 ) {
 
   try {
-    console.log(req.body.data);
+    //console.log(req.body.data);
     
     sentImage(req.body.data)
   } catch (error) {
-    console.log(error);
+    //console.log(error);
     
   }  
   res.status(200).json({ name: 'John Doe' })

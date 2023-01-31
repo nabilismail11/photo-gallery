@@ -33,7 +33,7 @@ export default function Avatar({
       const url = URL.createObjectURL(data);
       setAvatarUrl(url);
     } catch (error) {
-      console.log("Error downloading image: ", error);
+      //console.log("Error downloading image: ", error);
     }
   }
 
@@ -63,7 +63,7 @@ export default function Avatar({
       onUpload(filePath);
     } catch (error) {
       alert("Error uploading avatar!");
-      console.log(error);
+      //console.log(error);
     } finally {
       setUploading(false);
     }

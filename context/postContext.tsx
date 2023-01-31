@@ -66,7 +66,7 @@ export const PostContextProvider = ({ children }: { children: ReactNode }) => {
     dispatch({ type: Types.Get, payload: posts });
   };
   const addPost = (post: Post) => {
-    console.log("add post");
+    //console.log("add post");
 
     dispatch({ type: Types.Create, payload: post });
   };
