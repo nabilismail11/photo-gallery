@@ -5,6 +5,7 @@ import { Post } from "../types/post";
 import { deleteImage } from "../utils/delete";
 import { useRouter } from "next/router";
 import { usePostContext } from "../hooks/usePostContext";
+import Link from "next/link";
 
 function cn(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -33,7 +34,8 @@ export default function BlurImage({
 
   return (
     <div>
-      <a href={post.href} className="group text-decoration-line: none;">
+      <Link href={`/post/${post.id}`}>
+        {/* < className="group text-decoration-line: none;"> */}
         <div className="w-full aspect-w-1 aspect-h-1 bg-gray-200 rounded-lg overflow-hidden xl:aspect-w-7 xl:aspect-h-8">
           <Image
             alt=""
@@ -52,15 +54,23 @@ export default function BlurImage({
             onLoadingComplete={() => setLoading(false)}
           />
         </div>
-      </a>
+      </Link>
       <div className="grid grid-cols-2 gap-5 items-center">
         <div>
-          <h3
+          <Link href={`/user/${post.user_id}`}>
+            <h3
+              className="mt-4 text-sm text-gray-700 text-decoration-line: none"
+              style={{ textDecoration: "none" }}
+            >
+              {post.username}
+            </h3>
+          </Link>
+          {/* <h3
             className="mt-4 text-sm text-gray-700 text-decoration-line: none"
             style={{ textDecoration: "none" }}
           >
-            {post.username}
-          </h3>
+            {post.likes}
+          </h3> */}
           <p
             className="mt-1 text-lg font-medium text-gray-900 text-decoration-line: none;"
             style={{ textDecoration: "none" }}

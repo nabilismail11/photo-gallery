@@ -11,7 +11,7 @@ const SignUp = () => {
     <div className="container w-50" style={{ padding: "50px 0 100px 0" }}>
       {!session ? (
         <Auth
-          view="sign_up"
+          view="sign_in"
           supabaseClient={supabase}
           appearance={{
             theme: ThemeSupa,

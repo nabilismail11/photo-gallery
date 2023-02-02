@@ -7,14 +7,24 @@ import { useEffect, useState } from "react";
 import { LoadingScreen } from "../../components/Loading";
 import { usePostContext } from "../../hooks/usePostContext";
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || "",
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
-);
-
 export default function Home() {
   const session = useSession();
-  const { posts } = usePostContext();
+  const { posts, getPosts } = usePostContext();
+  const getPost = async () => {
+    let response = await fetch("http://localhost:3000/api/getPosts", {
+      method: "GET",
+    });
+    return await response.json();
+  };
+  //console.log(posts.length);
+
+  if (posts.length == 0) {
+    //console.log("wjdsikd");
+
+    getPost().then((response) => {
+      getPosts(response.data);
+    });
+  }
   const filter = posts.filter((post) => post.user_id == session?.user.id);
 
   const [loader, setLoader] = useState(false);

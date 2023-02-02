@@ -6,6 +6,7 @@ export type Post = {
     href:string;
     username:string|null;
     created_at?:any
+    likes?:number
   };
   
   

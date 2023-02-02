@@ -1,8 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
 .addPost{
-    padding: 20px;
     display: grid;
     justify-content: center;
     align-content: center;
@@ -117,3 +118,14 @@ label, input {
 .loading-screen .dot:nth-child(5)::before {
   animation-delay: 1000ms;
 } 
+
+a:hover, a:visited, a:link, a:active
+{
+    text-decoration: none;
+}
+
+body, html{
+  margin:0;
+  padding:0;
+  width: 100%;
+}

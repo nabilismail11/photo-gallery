@@ -44,7 +44,7 @@ export default function Account({ session }: { session: Session }) {
       }
     } catch (error) {
       alert("Error loading user data!");
-      //console.log(error);
+      ////console.log(error);
     } finally {
       setLoading(false);
     }
@@ -77,7 +77,7 @@ export default function Account({ session }: { session: Session }) {
       router.back();
     } catch (error) {
       alert("Error updating the data!");
-      //console.log(error);
+      ////console.log(error);
     } finally {
       setLoading(false);
     }
@@ -85,8 +85,8 @@ export default function Account({ session }: { session: Session }) {
 
   return (
     <div className="form-widget grid">
-      <div className="grid gap-4 grid-cols-2">
-        <div className="mt-3 grid justify-center content-center">
+      <div className="grid gap-4 grid-cols-1 lg:grid-cols-2 md:grid-cols-2">
+        <div className="mt-3 grid justify-center content-center gap-2">
           <Avatar
             uid={user!.id}
             url={avatar_url}
@@ -97,12 +97,12 @@ export default function Account({ session }: { session: Session }) {
             }}
           />
         </div>
-        <div className="grid gap-3">
-          <div>
+        <div className="grid gap-3 content-center">
+          <div className="grid">
             <label htmlFor="email">Email</label>
             <input id="email" type="text" value={session.user.email} disabled />
           </div>
-          <div>
+          <div className="grid">
             <label htmlFor="username">Username</label>
             <input
               id="username"

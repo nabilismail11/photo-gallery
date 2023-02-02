@@ -24,7 +24,7 @@ export async function getServerSideProps() {
 
 export default function Home({ postsS }: { postsS: Post[] }) {
   const { posts, getPosts } = usePostContext();
-  //console.log(postsS);
+  // //console.log(posts);
 
   useEffect(() => {
     if (postsS) {

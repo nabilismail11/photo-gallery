@@ -1,23 +1,26 @@
 import { Post } from "../types/post";
 
-import { createContext, Dispatch, ReactNode, useReducer } from "react";
+import { createContext, ReactNode, useReducer } from "react";
 
 interface PostsContextType {
   posts: Post[];
   getPosts: (items: Post[]) => void;
   addPost: (item: Post) => void;
   delPost: (item: Post) => void;
+  // getPost: (id: number) => void;
 }
 export enum Types {
   Create = "ADD",
   Delete = "DELETE",
   Get = "GET",
+  // GetPost = "GETPOST",
 }
 
 type PostPayload = {
   [Types.Create]: Post;
   [Types.Delete]: Post;
   [Types.Get]: Post[];
+  // [Types.GetPost]: number;
 };
 export type PostActions = ActionMap<PostPayload>[keyof ActionMap<PostPayload>];
 
@@ -26,6 +29,7 @@ export const PostsContext = createContext<PostsContextType>({
   getPosts: () => {},
   addPost: () => {},
   delPost: () => {},
+  // getPost: () => {},
 });
 
 interface State {
@@ -50,11 +54,15 @@ export const postReducer = (state: State, action: PostActions): State => {
         posts: action.payload,
       };
     case Types.Create:
-      return { posts: [...state.posts, action.payload] };
+      return { posts: [action.payload, ...state.posts] };
     case Types.Delete:
       return {
         posts: state.posts.filter((post) => post.id !== action.payload.id),
       };
+    // case Types.GetPost:
+    //   return {
+    //     posts: state.posts.filter((post) => post.id === action.payload),
+    //   };
     default:
       return state;
   }
@@ -66,13 +74,15 @@ export const PostContextProvider = ({ children }: { children: ReactNode }) => {
     dispatch({ type: Types.Get, payload: posts });
   };
   const addPost = (post: Post) => {
-    //console.log("add post");
-
     dispatch({ type: Types.Create, payload: post });
   };
   const delPost = (post: Post) => {
     dispatch({ type: Types.Delete, payload: post });
   };
+
+  // const getPost = (id: number) => {
+  //   dispatch({ type: Types.GetPost, payload: id });
+  // };
   return (
     <PostsContext.Provider value={{ ...state, getPosts, addPost, delPost }}>
       {children}

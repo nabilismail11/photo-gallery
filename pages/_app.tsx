@@ -9,6 +9,7 @@ import "bootstrap/dist/css/bootstrap.css";
 import Head from "next/head";
 
 import { PostContextProvider } from "../context/postContext";
+import { CommentContextProvider } from "../context/commentContext";
 
 function MyApp({
   Component,
@@ -21,19 +22,23 @@ function MyApp({
   }, []);
   const [supabase] = useState(() => createBrowserSupabaseClient());
   return (
-    <SessionContextProvider
-      supabaseClient={supabase}
-      initialSession={pageProps.initialSession}
-    >
+    <div className="">
       <PostContextProvider>
-        <Head>
-          <title>Image Gallery</title>
-          <meta property="og:title" content="Image Gallery" key="title" />
-        </Head>
-        <NavBar />
-        <Component {...pageProps} />
+        <CommentContextProvider>
+          <SessionContextProvider
+            supabaseClient={supabase}
+            initialSession={pageProps.initialSession}
+          >
+            <Head>
+              <title>Image Gallery</title>
+              <meta property="og:title" content="Image Gallery" key="title" />
+            </Head>
+            <NavBar />
+            <Component {...pageProps} />
+          </SessionContextProvider>
+        </CommentContextProvider>
       </PostContextProvider>
-    </SessionContextProvider>
+    </div>
   );
 }
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import {
   useSession,
@@ -6,12 +6,13 @@ import {
   useUser,
 } from "@supabase/auth-helpers-react";
 import { Database } from "../../utils/database.types";
-import SignUp from "../signup";
+import SignUp from "../signin";
 
 import { Post } from "../../types/post";
 import { useRouter } from "next/navigation";
 import { LoadingScreen } from "../../components/Loading";
 import { usePostContext } from "../../hooks/usePostContext";
+import Link from "next/link";
 
 const index = () => {
   const router = useRouter();
@@ -39,6 +40,7 @@ const index = () => {
       setLoader(false);
       SetImage("");
       setCaption("");
+      router.push("/myPosts");
     } catch (err) {
       console.error(err);
     }
@@ -46,6 +48,9 @@ const index = () => {
 
   async function getProfile() {
     try {
+      console.log(session?.user);
+      console.log(user);
+
       if (!user) throw new Error("No user");
 
       let { data, error, status } = await supabase
@@ -64,8 +69,8 @@ const index = () => {
         uName = data.username;
       }
     } catch (error) {
-      alert("Error loading user data!");
-      //console.log(error);
+      alert(error);
+      ////console.log(error);
     }
   }
   const previewFile = (file: Blob) => {
@@ -80,7 +85,7 @@ const index = () => {
   ) => {
     let uid = "saumit";
     if (!event.target.files || event.target.files.length === 0) {
-      throw new Error("You must select an image to upload.");
+      return;
     }
 
     const file = event.target.files[0];
@@ -96,7 +101,7 @@ const index = () => {
     //   .from("posts")
     //   .upload(filePath, file, { upsert: true });
 
-    // //console.log(uploadError);
+    // ////console.log(uploadError);
   };
 
   const handleUpload: React.MouseEventHandler<HTMLButtonElement> = async (
@@ -112,7 +117,7 @@ const index = () => {
     if (!uName) {
       setLoader(false);
       alert("Please Update your username");
-      router.push("/signup");
+      router.push("/signin");
     } else {
       if (caption && fileU) {
         const fileName = user.id + "/" + uuidv4();
@@ -122,7 +127,7 @@ const index = () => {
           .upload(fileName, fileU);
         setLoading(false);
         if (data) {
-          //console.log(data);
+          ////console.log(data);
 
           const post: Post = {
             href: "/",
@@ -135,14 +140,20 @@ const index = () => {
           };
           uploadPost(post);
         } else {
-          //console.log(error);
+          ////console.log(error);
         }
       } else {
         if (!fileU && !caption) {
+          setLoader(false);
+
           alert("Select image and enter Caption");
         } else if (!fileU) {
+          setLoader(false);
+
           alert("Select Post Image");
         } else if (!caption) {
+          setLoader(false);
+
           alert("Enter Caption");
         }
       }
@@ -154,71 +165,68 @@ const index = () => {
   ) : loader ? (
     <LoadingScreen />
   ) : (
-    <div className="max-w-sm rounded overflow-hidden shadow-lg mx-auto mt-10">
-      <img
-        className="object-scale-down h-48 w-96 pt-2"
-        src={
-          image
-            ? image
-            : "https://eadmdwacvzflwjvwxxlq.supabase.co/storage/v1/object/public/posts/dummy-image-square-1.jpg"
-        }
-        alt="Sunset in the mountains"
-        onClick={(e) => {}}
-      />
-      <div className="px-6 py-4">
-        <div className="font-bold text-xl mb-2">New Post</div>
-        <form className="w-full max-w-sm">
-          <div className="flex items-center border-b border-teal-500 py-2">
-            <input
-              className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
-              type="text"
-              placeholder="Caption"
-              aria-label="Caption"
-              onChange={(e) => {
-                setCaption(e.target.value);
-              }}
-              value={(caption as string) || ""}
-            />
+    <div className="grid content-center h-100">
+      <div className="max-w-sm rounded overflow-hidden shadow-lg mx-auto mt-10 pt-10">
+        <label htmlFor="single">
+          <img
+            className="object-scale-down h-48 w-96 pt-2"
+            src={
+              image
+                ? image
+                : "https://eadmdwacvzflwjvwxxlq.supabase.co/storage/v1/object/public/posts/dummy-image-square-1.jpg"
+            }
+            alt="Sunset in the mountains"
+            onClick={(e) => {}}
+          />
+        </label>
+        <div className="px-6 py-4">
+          <div className="font-bold text-xl mb-2">New Post</div>
+          <form className="w-full max-w-sm">
+            <div className="flex items-center border-b border-teal-500 py-2">
+              <input
+                className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
+                type="text"
+                placeholder="Caption"
+                aria-label="Caption"
+                onChange={(e) => {
+                  setCaption(e.target.value);
+                }}
+                value={(caption as string) || ""}
+              />
+              <button
+                className="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 text-sm border-4 text-white py-1 px-2 rounded"
+                type="button"
+              >
+                <label className="button primary block" htmlFor="single">
+                  {loading ? "Uploading ..." : "Select"}
+                </label>
+              </button>
+              <input
+                style={{
+                  visibility: "hidden",
+                  position: "absolute",
+                }}
+                type="file"
+                id="single"
+                accept="image/*"
+                onChange={handleImageSelect}
+                disabled={loading}
+              />
+            </div>
             <button
-              className="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 text-sm border-4 text-white py-1 px-2 rounded"
+              className="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 text-sm border-4 text-white py-1 px-2 rounded mt-2"
               type="button"
+              onClick={handleUpload}
             >
-              <label className="button primary block" htmlFor="single">
-                {loading ? "Uploading ..." : "Select"}
-              </label>
+              Upload
             </button>
-
-            <input
-              style={{
-                visibility: "hidden",
-                position: "absolute",
-              }}
-              type="file"
-              id="single"
-              accept="image/*"
-              onChange={handleImageSelect}
-              disabled={loading}
-            />
-          </div>
-          <button
-            className="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 text-sm border-4 text-white py-1 px-2 rounded mt-2"
-            type="button"
-            onClick={handleUpload}
-          >
-            Upload
-          </button>
-        </form>
-      </div>
-      <div className="px-6 pt-4 pb-2">
-        <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
-          #photography
-        </span>
-        <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
-          #travel
-        </span>
-        <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
-          #winter
-        </span>
+          </form>
+        </div>
+        {/* <div className="px-4 pt-2 pb-2">
+          <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
+            Username : {<Link href={`/user/${user?.id}`}>{username}</Link>}
+          </span>
+        </div> */}
       </div>
     </div>
   );
