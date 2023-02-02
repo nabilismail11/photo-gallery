@@ -35,7 +35,7 @@ const PostPage = ({ commentsC }: { commentsC: Comment[] }) => {
   const { posts, getPosts } = usePostContext();
 
   const getPost = async () => {
-    let response = await fetch("http://localhost:3000/api/getPosts", {
+    let response = await fetch("/api/getPosts", {
       method: "GET",
     });
     return await response.json();
