@@ -29,9 +29,12 @@ export default function User({ profiles }: { profiles: Profile[] }) {
   const { uid } = router.query;
 
   const getPost = async () => {
-    let response = await fetch("/api/getPosts", {
-      method: "GET",
-    });
+    let response = await fetch(
+      "https://inquisitive-biscotti-d27f6c.netlify.app/api/getPosts",
+      {
+        method: "GET",
+      }
+    );
     return await response.json();
   };
   //console.log(posts.length);
