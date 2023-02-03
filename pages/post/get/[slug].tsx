@@ -1,13 +1,13 @@
 import { useRouter } from "next/router";
-import { usePostContext } from "../../hooks/usePostContext";
-import PostDetails from "../../components/PostDetails";
+import { usePostContext } from "../../../hooks/usePostContext";
+import PostDetails from "../../../components/PostDetails";
 import { useEffect, useState } from "react";
-import { Comment } from "../../types/comment";
-import { Post } from "../../types/post";
+import { Comment } from "../../../types/comment";
+import { Post } from "../../../types/post";
 import { createClient } from "@supabase/supabase-js";
 import { useSession } from "@supabase/auth-helpers-react";
-import { useCommentContext } from "../../hooks/useCommentContext";
-import { getProfile } from "../../utils/getProfile";
+import { useCommentContext } from "../../../hooks/useCommentContext";
+import { getProfile } from "../../../utils/getProfile";
 import Link from "next/link";
 
 const supabaseAdmin = createClient(
@@ -16,38 +16,57 @@ const supabaseAdmin = createClient(
 );
 
 export async function getServerSideProps() {
-  const { data } = await supabaseAdmin
-    .from("comments")
-    .select("*")
-    .order("created_at", { ascending: false });
+  const getPosts = async () => {
+    const { data } = await supabaseAdmin
+      .from("posts")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    return data;
+  };
+
+  const getComments = async () => {
+    const { data } = await supabaseAdmin
+      .from("comments")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    return data;
+  };
+
+  const commandData = await getComments();
+
+  const postData = await getPosts();
+
+  console.log(postData);
 
   return {
     props: {
-      commentsC: data,
+      commentsC: commandData,
+      postsC: postData,
     },
   };
 }
-const PostPage = ({ commentsC }: { commentsC: Comment[] }) => {
+const PostPage = ({
+  commentsC,
+  postsC,
+}: {
+  commentsC: Comment[];
+  postsC: Post[];
+}) => {
   const { comments, getComments, addComment } = useCommentContext();
   const router = useRouter();
   const { slug } = router.query;
   const session = useSession();
   const { posts, getPosts } = usePostContext();
 
-  const getPost = async () => {
-    let response = await fetch("http://localhost:3000/api/getPosts", {
-      method: "GET",
-    });
-    return await response.json();
-  };
-
   useEffect(() => {
-    if (posts.length == 0) {
-      console.log(posts.length);
-
-      router.replace(`/post/get/${slug}`);
-    }
+    getPosts(postsC);
   }, []);
+
+  //   if (posts.length == 0) {
+  //     router.replace(`/post/get/${slug}`);
+  //   }
 
   const post: Post = posts.filter((p) => p.id == slug)[0];
   const [comment, setComment] = useState("");
