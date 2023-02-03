@@ -12,7 +12,6 @@ import { Post } from "../../types/post";
 import { useRouter } from "next/navigation";
 import { LoadingScreen } from "../../components/Loading";
 import { usePostContext } from "../../hooks/usePostContext";
-import Link from "next/link";
 
 const index = () => {
   const router = useRouter();
@@ -40,7 +39,7 @@ const index = () => {
       setLoader(false);
       SetImage("");
       setCaption("");
-      router.push("/myPosts");
+      router.push("/");
     } catch (err) {
       console.error(err);
     }

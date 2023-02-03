@@ -35,9 +35,12 @@ const PostPage = ({ commentsC }: { commentsC: Comment[] }) => {
   const { posts, getPosts } = usePostContext();
 
   const getPost = async () => {
-    let response = await fetch("http://localhost:3000/api/getPosts", {
-      method: "GET",
-    });
+    let response = await fetch(
+      "https://inquisitive-biscotti-d27f6c.netlify.app/api/getPosts",
+      {
+        method: "GET",
+      }
+    );
     return await response.json();
   };
 
